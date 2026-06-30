@@ -114,7 +114,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
 .drop-zone{min-height:28px;border-radius:8px;transition:background .15s;}
 .drop-zone.drag-over{background:#f0e6d8;border:2px dashed var(--brown);}
 .cal-empty{font-size:10px;color:var(--muted2);text-align:center;padding:6px 0;}
-.cal-card{border-radius:8px;padding:5px 7px;color:#fff;cursor:pointer;font-size:10px;transition:transform .12s;}
+.cal-day.drag-over{background:#f0e6d8;outline:2px dashed var(--brown);outline-offset:-2px;}
+.cal-card{border-radius:8px;padding:5px 7px;color:#fff;cursor:grab;font-size:10px;transition:transform .12s,opacity .15s;}
+.cal-card:active{cursor:grabbing;}
 .cal-card:hover{transform:translateY(-1px);}
 .cc-top{display:flex;align-items:center;gap:4px;margin-bottom:2px;}
 .cc-fmt{font-size:9px;font-weight:700;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:99px;}
@@ -463,9 +465,11 @@ textarea.modal-input{resize:vertical;min-height:60px;}
 
 <script>
 // ── Storage ──
-const CLIENTS_KEY='consultoria-clients-v1';
-const ITEMS_KEY='consultoria-items-v1';
-const EVENTS_KEY='consultoria-events-v1';
+const SUPA_URL='https://rexouhhnflwrpzosuoel.supabase.co';
+const SUPA_KEY='sb_publishable_VNc0h6Mm7xoMaHNaAu4GPw_MFt7Mtpa';
+const CLIENTS_KEY='consultoria-clients-bkp';
+const ITEMS_KEY='consultoria-items-bkp';
+const EVENTS_KEY='consultoria-events-bkp';
 
 let clients=[], items=[], events=[];
 let editingId=null, currentType='ideia';
@@ -479,15 +483,57 @@ let viewMonthEv=today.getMonth(), viewYearEv=today.getFullYear();
 document.getElementById('monthSel').value=viewMonth;
 document.getElementById('monthSelEv').value=viewMonthEv;
 
-function loadData(){
-  clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');
-  items=JSON.parse(localStorage.getItem(ITEMS_KEY)||'[]');
-  events=JSON.parse(localStorage.getItem(EVENTS_KEY)||'[]');
+// ── Supabase fetch ──
+async function supaFetch(path,method='GET',body=null){
+  const opts={method,headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(SUPA_URL+'/rest/v1/'+path,opts);
+  const txt=await res.text();
+  if(!res.ok)throw new Error(txt);
+  return txt?JSON.parse(txt):[];
+}
+
+async function loadData(){
+  showLoad(true);
+  try{
+    const cData=await supaFetch('clientes?order=created_at.asc');
+    clients=cData.map(r=>({id:r.id,name:r.name,handle:r.handle,network:r.network,color:r.color,obs:r.obs||''}));
+  }catch(e){clients=JSON.parse(localStorage.getItem(CLIENTS_KEY)||'[]');}
+  try{
+    const iData=await supaFetch('itens_consultoria?order=created_at.asc');
+    items=iData.map(r=>({id:r.id,type:r.type,date:r.date,clientId:r.client_id,format:r.format,place:r.place,title:r.title,hook:r.hook||'',dev:r.dev||'',roteiro:r.roteiro||'',cta:r.cta||'',refs:r.refs||''}));
+  }catch(e){items=JSON.parse(localStorage.getItem(ITEMS_KEY)||'[]');}
+  try{
+    const eData=await supaFetch('eventos_consultoria?order=created_at.asc');
+    events=eData.map(r=>({id:r.id,name:r.name,start:r.start_date,end:r.end_date,type:r.type,color:r.color,clientIds:r.client_ids?r.client_ids.split(','):[],obs:r.obs||''}));
+  }catch(e){events=JSON.parse(localStorage.getItem(EVENTS_KEY)||'[]');}
+  showLoad(false);
   render();
 }
+
 function saveClients(){localStorage.setItem(CLIENTS_KEY,JSON.stringify(clients));}
 function saveItems(){localStorage.setItem(ITEMS_KEY,JSON.stringify(items));}
 function saveEvents(){localStorage.setItem(EVENTS_KEY,JSON.stringify(events));}
+
+async function syncAddClient(cl){
+  try{await supaFetch('clientes','POST',{id:cl.id,name:cl.name,handle:cl.handle,network:cl.network,color:cl.color,obs:cl.obs||''});}catch(e){}
+}
+async function syncDeleteClient(id){try{await supaFetch('clientes?id=eq.'+id,'DELETE');}catch(e){}}
+
+async function syncAddItem(item){
+  try{await supaFetch('itens_consultoria','POST',{id:item.id,type:item.type,date:item.date||null,client_id:item.clientId,format:item.format,place:item.place,title:item.title,hook:item.hook||'',dev:item.dev||'',roteiro:item.roteiro||'',cta:item.cta||'',refs:item.refs||''});}catch(e){}
+}
+async function syncUpdateItem(item){
+  try{await supaFetch('itens_consultoria?id=eq.'+item.id,'PATCH',{type:item.type,date:item.date||null,client_id:item.clientId,format:item.format,place:item.place,title:item.title,hook:item.hook||'',dev:item.dev||'',roteiro:item.roteiro||'',cta:item.cta||'',refs:item.refs||''});}catch(e){}
+}
+async function syncDeleteItem(id){try{await supaFetch('itens_consultoria?id=eq.'+id,'DELETE');}catch(e){}}
+
+async function syncAddEvent(ev){
+  try{await supaFetch('eventos_consultoria','POST',{id:ev.id,name:ev.name,start_date:ev.start,end_date:ev.end,type:ev.type,color:ev.color,client_ids:(ev.clientIds||[]).join(','),obs:ev.obs||''});}catch(e){}
+}
+async function syncDeleteEvent(id){try{await supaFetch('eventos_consultoria?id=eq.'+id,'DELETE');}catch(e){}}
+
+function showLoad(v){document.getElementById('loading').classList.toggle('show',v);}
 
 // ── Tabs ──
 function switchTab(tab){
@@ -518,7 +564,7 @@ function addClient(){
   const handle=document.getElementById('cl-handle').value.trim();
   if(!name){toast('Preenche o nome do cliente! 📝');return;}
   const cl={id:Date.now().toString(),name,handle:handle||'@'+name.toLowerCase().replace(/\s/g,''),network:document.getElementById('cl-network').value,color:selectedClColor,obs:document.getElementById('cl-obs').value,createdAt:new Date().toISOString()};
-  clients.push(cl);saveClients();
+  clients.push(cl);saveClients();syncAddClient(cl);
   document.getElementById('cl-name').value='';
   document.getElementById('cl-handle').value='';
   document.getElementById('cl-obs').value='';
@@ -528,7 +574,7 @@ function addClient(){
 
 function deleteClient(id){
   if(!confirm('Excluir este cliente? Os conteúdos relacionados serão mantidos.'))return;
-  clients=clients.filter(c=>c.id!==id);saveClients();
+  clients=clients.filter(c=>c.id!==id);saveClients();syncDeleteClient(id);
   renderClientList();updateClientSelects();updateFilters();toast('🗑 Cliente excluído');
 }
 
@@ -590,7 +636,7 @@ function addItem(){
   if(!clientId){toast('Seleciona um cliente! 👥');return;}
   if(currentType==='batido'&&!document.getElementById('f-date').value){toast('Seleciona a data! 📅');return;}
   const item={id:Date.now().toString(),type:currentType,date:currentType==='batido'?document.getElementById('f-date').value:null,clientId,format:document.getElementById('f-format').value,place:document.getElementById('f-place').value||'Feed',title,hook:'',dev:'',roteiro:'',cta:'',refs:'',createdAt:new Date().toISOString()};
-  items.push(item);saveItems();
+  items.push(item);saveItems();syncAddItem(item);
   document.getElementById('f-title').value='';
   document.getElementById('f-date').value='';
   toast(currentType==='ideia'?'💡 Ideia salva!':'✅ Conteúdo adicionado!');
@@ -622,17 +668,42 @@ function renderBank(){
 
 // ── Drag & Drop ──
 let draggedId=null;
-function dragStart(e,id){draggedId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>{const el=document.getElementById('bcard-'+id);if(el)el.classList.add('dragging');},0);}
-function dragEnd(e){const el=document.getElementById('bcard-'+draggedId);if(el)el.classList.remove('dragging');}
-function dragOver(e,iso){e.preventDefault();e.currentTarget.classList.add('drag-over');}
-function dragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function dragStart(e,id){
+  draggedId=id;
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain',id);
+  setTimeout(()=>{
+    const el=document.getElementById('bcard-'+id)||document.getElementById('ccard-'+id);
+    if(el)el.style.opacity='.4';
+  },0);
+}
+function dragEnd(e){
+  document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  const el=document.getElementById('bcard-'+draggedId)||document.getElementById('ccard-'+draggedId);
+  if(el)el.style.opacity='';
+}
+function dragOver(e,iso){
+  e.preventDefault();e.stopPropagation();
+  e.currentTarget.classList.add('drag-over');
+}
+function dragLeave(e){
+  if(!e.currentTarget.contains(e.relatedTarget)){
+    e.currentTarget.classList.remove('drag-over');
+  }
+}
 function drop(e,iso){
-  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  e.preventDefault();e.stopPropagation();
+  document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
   if(!draggedId)return;
   const idx=items.findIndex(i=>i.id===draggedId);if(idx===-1)return;
-  items[idx].type='batido';items[idx].date=iso;
-  saveItems();draggedId=null;
-  toast('📅 Agendado em '+iso.split('-').reverse().join('/'));render();
+  const oldDate=items[idx].date;
+  items[idx].type='batido';
+  items[idx].date=iso;
+  saveItems();
+  syncUpdateItem(items[idx]);
+  const oldDateLabel=iso.split('-').reverse().join('/');
+  toast(oldDate?'📅 Movido para '+oldDateLabel:'📅 Agendado em '+oldDateLabel);
+  render();
 }
 
 // ── Calendar ──
@@ -660,17 +731,20 @@ function renderCal(){
       });
       const dayEvents=events.filter(ev=>ev.start<=iso&&ev.end>=iso);
       const evBanners=dayEvents.map(ev=>`<div class="ev-banner" style="background:${ev.color}">${ev.name}</div>`).join('');
+      cell.setAttribute('ondragover',`dragOver(event,'${iso}')`);
+      cell.setAttribute('ondragleave','dragLeave(event)');
+      cell.setAttribute('ondrop',`drop(event,'${iso}')`);
       cell.innerHTML=`<div class="cal-day-header"><span class="cal-day-num">${day}</span></div>
         <div class="cal-day-body">${evBanners}
-          <div class="drop-zone" ondragover="dragOver(event,'${iso}')" ondragleave="dragLeave(event)" ondrop="drop(event,'${iso}')">
             ${dayItems.length?dayItems.map(item=>{
               const cl=getClient(item.clientId)||{color:'#999',handle:'?'};
-              return `<div class="cal-card" style="background:${cl.color}" onclick="openModal('${item.id}')">
+              return `<div class="cal-card" id="ccard-${item.id}" draggable="true" style="background:${cl.color}"
+                ondragstart="dragStart(event,'${item.id}')" ondragend="dragEnd(event)"
+                onclick="openModal('${item.id}')">
                 <div class="cc-top"><span class="cc-fmt">${item.format}</span><span class="cc-handle">${cl.handle}</span></div>
                 <div class="cc-title">${item.title}</div>
               </div>`;
             }).join(''):'<div class="cal-empty">—</div>'}
-          </div>
         </div>`;
       wk.appendChild(cell);day++;
     }weeks.appendChild(wk);
@@ -711,14 +785,14 @@ function addEvent(){
   if(!name||!start||!end){toast('Preenche nome e datas! 📅');return;}
   const evClients=[...document.querySelectorAll('.ev-cl-item.on')].map(el=>el.dataset.cid);
   const ev={id:Date.now().toString(),name,start,end,type:document.getElementById('ev-type').value,color:selectedEvColor,clientIds:evClients,obs:document.getElementById('ev-obs').value};
-  events.push(ev);saveEvents();
+  events.push(ev);saveEvents();syncAddEvent(ev);
   document.getElementById('ev-name').value='';document.getElementById('ev-start').value='';document.getElementById('ev-end').value='';document.getElementById('ev-obs').value='';
   toast('🚀 Acontecimento adicionado!');renderEvList();renderEvCal();renderCal();
 }
 
 function deleteEvent(id){
   if(!confirm('Excluir?'))return;
-  events=events.filter(e=>e.id!==id);saveEvents();renderEvList();renderEvCal();renderCal();toast('🗑 Excluído');
+  events=events.filter(e=>e.id!==id);saveEvents();syncDeleteEvent(id);renderEvList();renderEvCal();renderCal();toast('🗑 Excluído');
 }
 
 function renderEvList(){
@@ -801,7 +875,7 @@ function saveItem(){
   const title=document.getElementById('m-title').value.trim();
   if(!title){toast('Título não pode ser vazio');return;}
   items[idx]={...items[idx],clientId:document.getElementById('m-client').value,date:document.getElementById('m-date').value||null,format:document.getElementById('m-format').value,place:document.getElementById('m-place').value,title,hook:document.getElementById('m-hook').value,dev:document.getElementById('m-dev').value,roteiro:document.getElementById('m-roteiro').value,cta:document.getElementById('m-cta').value,refs:document.getElementById('m-refs').value};
-  saveItems();closeModal();toast('✅ Salvo!');render();
+  saveItems();syncUpdateItem(items[idx]);closeModal();toast('✅ Salvo!');render();
 }
 
 function promoteItem(){
@@ -810,23 +884,23 @@ function promoteItem(){
   if(!date){toast('Adiciona uma data para agendar! 📅');return;}
   const idx=items.findIndex(i=>i.id===editingId);if(idx===-1)return;
   items[idx].type='batido';items[idx].date=date;
-  saveItems();closeModal();toast('📅 Agendado!');render();
+  saveItems();syncUpdateItem(items[idx]);closeModal();toast('📅 Agendado!');render();
 }
 
 function deleteItem(){
   if(!editingId)return;
   if(!confirm('Excluir?'))return;
-  const id=editingId;items=items.filter(i=>i.id!==id);saveItems();closeModal();toast('🗑 Excluído');render();
+  const id=editingId;items=items.filter(i=>i.id!==id);saveItems();syncDeleteItem(id);closeModal();toast('🗑 Excluído');render();
 }
 
 function quickDelete(id){
   if(!confirm('Excluir esta ideia?'))return;
-  items=items.filter(i=>i.id!==id);saveItems();toast('🗑 Excluído');render();
+  items=items.filter(i=>i.id!==id);saveItems();syncDeleteItem(id);toast('🗑 Excluído');render();
 }
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-
+setInterval(()=>{loadData();},30000);
 loadData();
 </script>
 </body>
