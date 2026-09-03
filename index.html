@@ -1331,11 +1331,17 @@ function updateClientSelects(){
 }
 function fillChannelSelect(selectId,clientId,current){
   const sel=document.getElementById(selectId);if(!sel)return;
-  let list=clientId?clientChannels(clientId):CHANNELS;
-  if(current&&!list.includes(current))list=[current].concat(list);
+  const own=clientId?clientChannels(clientId).filter(c=>c):[];
+  const extra=(current&&!CHANNELS.includes(current)&&!own.includes(current))?[current]:[];
+  const rest=CHANNELS.filter(c=>!own.includes(c));
   const cur=current||sel.value;
-  sel.innerHTML=list.map(c=>`<option>${c}</option>`).join('');
-  if(cur&&list.includes(cur))sel.value=cur;
+  let html='';
+  if(own.length)html+=`<optgroup label="Canais do cliente">${own.map(c=>`<option>${esc(c)}</option>`).join('')}</optgroup>`;
+  if(extra.length)html+=extra.map(c=>`<option>${esc(c)}</option>`).join('');
+  if(rest.length)html+=`<optgroup label="${own.length?'Outros canais':'Canais'}">${rest.map(c=>`<option>${esc(c)}</option>`).join('')}</optgroup>`;
+  sel.innerHTML=html;
+  const all=own.concat(extra,rest);
+  if(cur&&all.includes(cur))sel.value=cur;
 }
 function updateFilters(){
   const cont=document.getElementById('client-filters');
@@ -1904,11 +1910,11 @@ function renderReport(){
 ['rp-client','rp-period','rp-month','rp-year'].forEach(id=>document.getElementById(id).addEventListener('change',renderReport));
 
 // ══════════ EXPORTAR PDF ══════════
-function printDoc(title,bodyHTML){
+function printDoc(title,bodyHTML,landscape){
   const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(title)}</title>
   <style>
-    @page{margin:14mm;}
-    *{box-sizing:border-box;margin:0;padding:0;}
+    @page{margin:${landscape?'10mm':'14mm'};${landscape?'size:A4 landscape;':''}}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     body{font-family:'Poppins','Helvetica Neue',Arial,sans-serif;color:#2a1608;font-size:11px;}
     h1{font-size:19px;color:#5a2d0c;margin-bottom:2px;}
     .sub{font-size:11px;color:#977457;margin-bottom:16px;}
@@ -1924,6 +1930,19 @@ function printDoc(title,bodyHTML){
     .tag{display:inline-block;padding:1px 7px;border-radius:99px;color:#fff;font-size:9px;font-weight:700;}
     .muted{color:#977457;}
     .foot{margin-top:18px;font-size:9px;color:#cbb49d;}
+    .cal{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:12px;}
+    .cal th{background:#5a2d0c;color:#fff;font-size:9px;padding:5px 3px;border:1px solid #5a2d0c;text-align:center;letter-spacing:.05em;text-transform:uppercase;}
+    .cal td{border:1px solid #e6d5c2;vertical-align:top;height:94px;padding:3px;}
+    .cal td.off{background:#faf5ee;}
+    .dnum{font-size:10px;font-weight:700;color:#5a2d0c;margin-bottom:3px;}
+    .pev{font-size:7.5px;font-weight:700;color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;}
+    .pit{border-left:3px solid #999;background:#fbf6f1;border-radius:3px;padding:2px 4px;margin-bottom:2px;page-break-inside:avoid;}
+    .pit .meta{font-size:6.8px;color:#8a6c50;text-transform:uppercase;letter-spacing:.03em;}
+    .pit .tit{font-size:8px;line-height:1.25;color:#2a1608;}
+    .dot{display:inline-block;width:5px;height:5px;border-radius:50%;vertical-align:middle;margin-right:3px;}
+    .legend{font-size:8.5px;color:#6b4f39;margin-bottom:10px;}
+    .legend span{margin-right:12px;white-space:nowrap;}
+    .pb{page-break-before:always;}
   </style></head><body>${bodyHTML}<div class="foot">Gerado em ${new Date().toLocaleDateString('pt-BR')} · Calendário de Consultoria</div></body></html>`;
   const f=document.getElementById('print-frame');
   const d=f.contentWindow.document;
@@ -1964,6 +1983,40 @@ function buildClientSections(list,clientIds){
     return `<h2>${esc(cl.name)}</h2>${kpiBlock(sub)}${itemsTable(sub,false)}`;
   }).join('');
 }
+function calendarGridHTML(list,evs,month,year){
+  const firstDay=new Date(year,month,1).getDay();
+  const days=new Date(year,month+1,0).getDate();
+  const cells=[];
+  for(let i=0;i<firstDay;i++)cells.push('<td class="off"></td>');
+  for(let d=1;d<=days;d++){
+    const iso=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayEvs=evs.filter(ev=>ev.start<=iso&&ev.end>=iso);
+    const dayItems=list.filter(i=>i.date===iso);
+    const blocks=dayItems.map(i=>{
+      const cl=getClient(i.clientId)||{color:'#999',name:''};
+      const s=stageById(i.stage);
+      const canal=i.canal?esc(i.canal)+' · ':'';
+      return `<div class="pit" style="border-left-color:${cl.color}">
+        <div class="meta"><span class="dot" style="background:${s.color}"></span>${canal}${esc(fmtShort(i.format))}</div>
+        <div class="tit">${esc(i.title)}</div>
+      </div>`;
+    }).join('');
+    cells.push(`<td><div class="dnum">${d}</div>
+      ${dayEvs.map(ev=>`<div class="pev" style="background:${ev.color}">${esc(ev.name)}</div>`).join('')}
+      ${blocks}</td>`);
+  }
+  while(cells.length%7)cells.push('<td class="off"></td>');
+  let rows='';
+  for(let i=0;i<cells.length;i+=7)rows+='<tr>'+cells.slice(i,i+7).join('')+'</tr>';
+  return `<table class="cal"><thead><tr>
+    <th>Domingo</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+}
+function legendHTML(ids){
+  const cls=ids.map(id=>{const c=getClient(id);return c?`<span><span class="dot" style="background:${c.color}"></span>${esc(c.name)}</span>`:'';}).join('');
+  const st=STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('');
+  return `<div class="legend">${cls}</div><div class="legend">${st}</div>`;
+}
 function exportCalendarPDF(){
   const month=parseInt(document.getElementById('monthSel').value);
   const year=parseInt(document.getElementById('yearSel').value);
@@ -1972,9 +2025,16 @@ function exportCalendarPDF(){
   else if(!activeClients.has('all'))list=list.filter(i=>activeClients.has(i.clientId));
   if(!list.length){toast('Nada agendado neste mês');return;}
   const ids=[...new Set(list.map(i=>i.clientId))];
+  const last=`${year}-${String(month+1).padStart(2,'0')}-${String(new Date(year,month+1,0).getDate()).padStart(2,'0')}`;
+  const first=`${year}-${String(month+1).padStart(2,'0')}-01`;
+  const evs=visibleEvents().filter(ev=>ev.start&&ev.end&&ev.start<=last&&ev.end>=first&&(ids.length>1||!(ev.clientIds||[]).length||(ev.clientIds||[]).some(c=>ids.includes(c))));
   const titleClient=ids.length===1?(getClient(ids[0])||{name:''}).name:'Todos os clientes';
-  const body=`<h1>${esc(titleClient)}</h1><div class="sub">${MONTHS[month]} de ${year} · calendário de conteúdo</div>${buildClientSections(list,ids)}`;
-  printDoc(`${titleClient} — ${MONTHS[month]} ${year}`,body);
+  const body=`<h1>${esc(titleClient)}</h1><div class="sub">${MONTHS[month]} de ${year} · calendário de conteúdo</div>`
+    +legendHTML(ids)
+    +calendarGridHTML(list,evs,month,year)
+    +`<div class="pb"></div><h1>Detalhamento</h1><div class="sub">${MONTHS[month]} de ${year}</div>`
+    +buildClientSections(list,ids);
+  printDoc(`${titleClient} — ${MONTHS[month]} ${year}`,body,true);
 }
 function exportReportPDF(){
   const {done,period,month,year}=reportData();
