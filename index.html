@@ -1362,6 +1362,16 @@ function toggleClientFilter(id){
   if(activeClients.has(id))activeClients.delete(id);else activeClients.add(id);
   if(!activeClients.size)activeClients=new Set(['all']);
   updateFilters();renderCal();
+  // Com um único cliente filtrado, o formulário "Criar conteúdo" já vem com ele
+  const cid=filteredClientId();
+  const fSel=document.getElementById('f-client');
+  if(cid&&fSel){fSel.value=cid;fillChannelSelect('f-canal',cid);}
+}
+// Cliente filtrado no calendário (só quando exatamente um está selecionado)
+function filteredClientId(){
+  if(activeClients.has('all')||activeClients.size!==1)return null;
+  const id=[...activeClients][0];
+  return getClient(id)?id:null;
 }
 
 // ── Criar item pelo painel ──
@@ -1749,8 +1759,9 @@ function openNewModal(iso){
   document.getElementById('m-dot').style.background='var(--caramel)';
   document.getElementById('m-ttl').textContent=iso?('Novo conteúdo · '+fmtDate(iso)):'Novo conteúdo';
   updateClientSelects();
-  document.getElementById('m-client').value='';
-  fillChannelSelect('m-canal','');
+  const preCid=filteredClientId()||'';
+  document.getElementById('m-client').value=preCid;
+  fillChannelSelect('m-canal',preCid);
   document.getElementById('m-date').value=iso||'';
   document.getElementById('m-format').value=FORMATS[0];
   document.getElementById('m-place').value='Feed';
