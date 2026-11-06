@@ -337,6 +337,36 @@ textarea.modal-input{resize:vertical;min-height:60px;}
 #print-frame{position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;}
 
 @media(max-width:960px){.shell{grid-template-columns:1fr;}}
+/* ── Central de demandas ── */
+.dm-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:1rem;}
+.dm-kpi{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:11px 13px;cursor:pointer;transition:border-color .12s,transform .12s;}
+.dm-kpi:hover{transform:translateY(-1px);}
+.dm-kpi.on{border-color:var(--brown);box-shadow:0 0 0 2px rgba(168,87,31,.15);}
+.dm-kpi .k-top{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--ink-soft);}
+.dm-kpi .k-dot{width:9px;height:9px;border-radius:50%;flex:none;}
+.dm-kpi .k-num{font-size:20px;font-weight:700;color:var(--text);margin-top:4px;line-height:1.1;}
+.dm-kpi .k-num small{font-size:11px;font-weight:600;color:var(--muted);}
+.dm-kpi .k-bar{height:5px;border-radius:99px;background:var(--cream);margin-top:7px;overflow:hidden;}
+.dm-kpi .k-bar span{display:block;height:100%;border-radius:99px;}
+.dm-kpi .k-sub{font-size:10px;color:var(--muted);margin-top:5px;font-weight:600;}
+.dm-search{border:1.5px solid var(--border);border-radius:9px;padding:7px 11px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;min-width:180px;}
+.dm-card{background:var(--card);border:1.5px solid var(--border);border-left:5px solid var(--brown);border-radius:12px;padding:9px 11px;cursor:pointer;transition:box-shadow .12s;}
+.dm-card:hover{box-shadow:0 5px 15px rgba(124,74,30,.15);}
+.dm-card[draggable="true"]{cursor:grab;}
+.dm-card .d-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:4px;}
+.dm-tag{font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:99px;color:#fff;}
+.dm-pill{font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--cream);color:var(--muted);}
+.dm-pill.late{background:#fef2f2;color:#b91c1c;}
+.dm-pill.alta{background:#fff1e6;color:#c2410c;}
+.dm-card .d-title{font-size:12.5px;font-weight:600;line-height:1.35;color:var(--text);}
+.dm-card .d-sub{font-size:10.5px;color:var(--muted);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.dm-card .d-sub a{color:var(--brown);font-weight:700;text-decoration:none;}
+.dm-children{display:flex;flex-direction:column;gap:6px;}
+.dm-child{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;background:var(--cream);font-size:12px;cursor:pointer;}
+.dm-child .c-title{flex:1;color:var(--text);font-weight:600;}
+.dm-mini-btn{display:inline-flex;align-items:center;gap:5px;background:var(--card);border:1.5px solid var(--border);border-radius:9px;color:var(--brown);font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700;padding:6px 11px;cursor:pointer;}
+.dm-mini-btn:hover{border-color:var(--brown);}
+.dm-hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px;}
 @media(max-width:820px){
   .menu-btn{display:flex;}
   .sidebar{position:fixed;left:0;top:0;z-index:90;transform:translateX(-100%);transition:transform .22s ease;box-shadow:0 0 40px rgba(42,22,8,.18);}
@@ -358,6 +388,9 @@ textarea.modal-input{resize:vertical;min-height:60px;}
   .report-table{font-size:11px;}
   .report-table th,.report-table td{padding:7px 8px;}
   .kb-col{max-height:none;}
+  .dm-kpis{display:flex;overflow-x:auto;padding-bottom:4px;}
+  .dm-kpi{flex:0 0 150px;}
+  .dm-search{flex:1;min-width:0;}
 }
 @media(max-width:460px){
   .sidebar{width:80vw;}
@@ -398,6 +431,10 @@ textarea.modal-input{resize:vertical;min-height:60px;}
       <div class="sb-item" data-view="producao" onclick="switchView('producao')">
         <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="16" y="4" width="5" height="7" rx="1.5"/></svg>
         Produção
+      </div>
+      <div class="sb-item" data-view="demandas" onclick="switchView('demandas')">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>
+        Central de demandas
       </div>
       <div class="sb-item" data-roles="admin,editor" onclick="openCreatePanel()">
         <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -735,6 +772,22 @@ textarea.modal-input{resize:vertical;min-height:60px;}
       </div>
     </div>
 
+    <!-- VIEW CENTRAL DE DEMANDAS -->
+    <div id="view-demandas" class="view">
+      <div class="cal-controls">
+        <select id="dm-client" onchange="dmCat='all';renderDemandas()"></select>
+        <input type="search" class="dm-search" id="dm-search" placeholder="Buscar demanda…" oninput="renderDemandas()">
+        <select id="dm-prio" onchange="renderDemandas()">
+          <option value="all">Todas as prioridades</option><option value="alta">Prioridade alta</option><option value="media">Prioridade média</option><option value="baixa">Prioridade baixa</option>
+        </select>
+        <button class="pdf-btn" onclick="exportDemandasPDF()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>PDF</button>
+        <div class="spacer"></div>
+        <button class="pdf-btn dm-edit-only" onclick="openDemanda(null)"><svg class="ic-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nova demanda</button>
+      </div>
+      <div class="dm-kpis" id="dm-kpis"></div>
+      <div class="kanban" id="dm-board"></div>
+    </div>
+
     <!-- VIEW USUÁRIOS -->
     <div id="view-usuarios" class="view">
     <div class="shell">
@@ -862,6 +915,90 @@ textarea.modal-input{resize:vertical;min-height:60px;}
         <button class="modal-promote" id="m-promote" onclick="promoteItem()" style="display:none"><svg class="ic-s" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Agendar</button>
         <button class="modal-save" id="m-save-btn" onclick="saveItem()">Salvar</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DEMANDA -->
+<div class="modal-overlay" id="dm-overlay" onclick="if(event.target===this)closeDemanda()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-dot" id="dm-dot"></div>
+      <div class="modal-ttl" id="dm-ttl">Nova demanda</div>
+      <button class="modal-close" onclick="closeDemanda()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-2col">
+        <div class="modal-section">
+          <div class="modal-lbl">Categoria</div>
+          <select class="modal-input dm-f" id="dm-cat" onchange="dmSyncFields()"></select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-lbl">Cliente</div>
+          <select class="modal-input dm-f" id="dm-mclient"></select>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-lbl">Em que pé está</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="dm-status-chips"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-lbl">Título</div>
+        <input class="modal-input dm-f" id="dm-title" placeholder="Ex: Página de vendas do protocolo de menopausa">
+      </div>
+      <div class="modal-2col" id="dm-extra-wrap">
+        <div class="modal-section">
+          <div class="modal-lbl">Aula de origem</div>
+          <select class="modal-input dm-f" id="dm-parent"></select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-lbl">Vira o quê?</div>
+          <select class="modal-input dm-f" id="dm-tipo"></select>
+        </div>
+      </div>
+      <div class="modal-section" id="dm-trecho-wrap">
+        <div class="modal-lbl">Trecho / minutagem</div>
+        <input class="modal-input dm-f" id="dm-trecho" placeholder="Ex: 04:10 – 05:30 (explicação do calorão às 3h)">
+      </div>
+      <div class="modal-2col">
+        <div class="modal-section">
+          <div class="modal-lbl">Responsável</div>
+          <input class="modal-input dm-f" id="dm-resp" placeholder="Quem está tocando">
+        </div>
+        <div class="modal-section">
+          <div class="modal-lbl">Prazo</div>
+          <input type="date" class="modal-input dm-f" id="dm-prazo">
+        </div>
+      </div>
+      <div class="modal-2col">
+        <div class="modal-section">
+          <div class="modal-lbl">Prioridade</div>
+          <select class="modal-input dm-f" id="dm-prioridade"><option value="media">Média</option><option value="alta">Alta</option><option value="baixa">Baixa</option></select>
+        </div>
+        <div class="modal-section">
+          <div class="modal-lbl">Link (Drive, página, Canva…)</div>
+          <input class="modal-input dm-f" id="dm-link" placeholder="https://">
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-lbl">Descrição / próximos passos</div>
+        <textarea class="modal-input dm-f" id="dm-desc" rows="4" placeholder="O que falta, observações, copy, briefing…"></textarea>
+      </div>
+      <div class="modal-section" id="dm-children-wrap">
+        <div class="modal-lbl" style="display:flex;align-items:center;justify-content:space-between">
+          <span>O que extrair dessa aula</span>
+          <button class="dm-mini-btn dm-edit-only" onclick="dmExtractFromCurrent()"><svg class="ic-s" viewBox="0 0 24 24" style="margin:0"><path d="M12 5v14M5 12h14"/></svg>Extrair conteúdo</button>
+        </div>
+        <div class="dm-children" id="dm-children"></div>
+      </div>
+      <div class="modal-section" id="dm-cal-wrap">
+        <button class="dm-mini-btn" id="dm-cal-btn" onclick="dmSendToCalendar()"><svg class="ic-s" viewBox="0 0 24 24" style="margin:0"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Mandar pro banco de ideias do calendário</button>
+        <div class="dm-hint" id="dm-cal-hint"></div>
+      </div>
+    </div>
+    <div class="modal-foot" id="dm-foot">
+      <button class="modal-del" id="dm-del-btn" onclick="deleteDemanda()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></svg>Excluir</button>
+      <button class="modal-save" onclick="saveDemanda()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1003,6 +1140,8 @@ async function loadData(){
   catch(e){events=JSON.parse(localStorage.getItem(EVENTS_KEY)||'[]');}
   try{users=(await supaFetch('usuarios_consultoria?order=created_at.asc')).map(mapUserRow);}
   catch(e){users=JSON.parse(localStorage.getItem(USERS_KEY)||'[]');}
+  await loadDemandas();
+  if(currentView==='demandas')renderDemandas();
   showLoad(false);
   render();
   applyRolePermissions();
@@ -1018,6 +1157,7 @@ async function safetySync(){
   try{const d=await supaFetch('clientes?order=created_at.asc');reconcile(clients,d.map(mapClientRow));saveClients();updateClientSelects();updateFilters();if(currentView==='clientes')renderClientList();}catch(e){}
   try{const d=await supaFetch('itens_consultoria?order=created_at.asc');reconcile(items,d.map(mapItemRow));saveItems();renderBank();renderCal();if(currentView==='relatorio')renderReport();if(currentView==='producao')renderKanban();}catch(e){}
   try{const d=await supaFetch('eventos_consultoria?order=created_at.asc');reconcile(events,d.map(mapEventRow));saveEvents();renderEvList();renderEvCal();renderCal();}catch(e){}
+  try{const d=await supaFetch('demandas_consultoria?order=created_at.asc');reconcile(demandas,d.map(mapDemandaRow));saveDemandasCache();if(currentView==='demandas')renderDemandas();}catch(e){}
   if(session&&session.role==='admin'){
     try{const d=await supaFetch('usuarios_consultoria?order=created_at.asc');reconcile(users,d.map(mapUserRow));saveUsersCache();if(currentView==='usuarios')renderUsers();}catch(e){}
   }
@@ -1031,6 +1171,7 @@ function initRealtime(){
       .on('postgres_changes',{event:'*',schema:'public',table:'itens_consultoria'},p=>{applyRowChange(items,p,mapItemRow);saveItems();renderBank();renderCal();if(currentView==='relatorio')renderReport();if(currentView==='producao')renderKanban();})
       .on('postgres_changes',{event:'*',schema:'public',table:'clientes'},p=>{applyRowChange(clients,p,mapClientRow);saveClients();updateClientSelects();updateFilters();renderCal();if(currentView==='clientes')renderClientList();})
       .on('postgres_changes',{event:'*',schema:'public',table:'eventos_consultoria'},p=>{applyRowChange(events,p,mapEventRow);saveEvents();renderEvList();renderEvCal();renderCal();})
+      .on('postgres_changes',{event:'*',schema:'public',table:'demandas_consultoria'},p=>{applyRowChange(demandas,p,mapDemandaRow);saveDemandasCache();if(currentView==='demandas')renderDemandas();})
       .on('postgres_changes',{event:'*',schema:'public',table:'usuarios_consultoria'},p=>{applyRowChange(users,p,mapUserRow);saveUsersCache();if(currentView==='usuarios')renderUsers();})
       .subscribe(status=>{
         if(status==='SUBSCRIBED')setSyncStatus('live');
@@ -1202,6 +1343,7 @@ function visibleEvents(){return session.role==='cliente'?events.filter(ev=>(ev.c
 const VIEW_META={
   calendario:{title:'Calendário',sub:'Gerencie o conteúdo de todos os seus clientes'},
   producao:{title:'Produção',sub:'Em produção, em edição, feito e postado'},
+  demandas:{title:'Central de demandas',sub:'Ferramentas, páginas, criativos, roteiros, aulas e o que sai delas'},
   clientes:{title:'Clientes',sub:'Cadastre e organize seus clientes de consultoria'},
   acontecimentos:{title:'Acontecimentos',sub:'Lançamentos, campanhas e datas importantes'},
   relatorio:{title:'Relatório',sub:'Produção de conteúdo por cliente'},
@@ -1219,6 +1361,7 @@ function switchView(view){
   if(view==='usuarios')renderUsers();
   if(view==='relatorio')renderReport();
   if(view==='producao')renderKanban();
+  if(view==='demandas')renderDemandas();
   toggleSidebar(false);
 }
 function toggleSidebar(force){
@@ -2134,11 +2277,236 @@ function renderUsers(){
 }
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDemanda();}});
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-btn').click();});
 
 loadTheme();
 checkBootstrapAndLogin();
+
+// ══════════ CENTRAL DE DEMANDAS ══════════
+const DM_CATS=[
+  {id:'aula',label:'Aulas prontas',color:'#7c3aed'},
+  {id:'extraido',label:'Extraído de aulas',color:'#db2777'},
+  {id:'roteiro',label:'Roteiros',color:'#0ea5e9'},
+  {id:'criativo',label:'Criativos',color:'#ea580c'},
+  {id:'pagina',label:'Páginas de vendas',color:'#16a34a'},
+  {id:'ferramenta',label:'Ferramentas',color:'#475569'},
+  {id:'outro',label:'Outras demandas',color:'#a8571f'}
+];
+const DM_STATUS=[
+  {id:'afazer',label:'A fazer',color:'#94a3b8'},
+  {id:'andamento',label:'Em andamento',color:'#0ea5e9'},
+  {id:'revisao',label:'Aguardando aprovação',color:'#d97706'},
+  {id:'pronto',label:'Pronto',color:'#16a34a'}
+];
+const DM_TIPOS=['Corte (Reels/TikTok)','Carrossel','Meme','Roteiro','Criativo de anúncio','Post estático','Sequência de stories','E-mail / WhatsApp','Outro'];
+const DM_TIPO_FORMAT={'Corte (Reels/TikTok)':'Reels nativo','Carrossel':'Carrossel design','Meme':'Estático','Roteiro':'Reels nativo','Criativo de anúncio':'Reels nativo','Post estático':'Estático','Sequência de stories':'Sequência de stories','E-mail / WhatsApp':'Material WhatsApp','Outro':'Post único'};
+const DEMANDAS_KEY='consultoria-demandas-bkp';
+let demandas=[], dmCat='all', dmEditingId=null, dmStatus='afazer', dmDragId=null;
+const dmCatById=id=>DM_CATS.find(c=>c.id===id)||DM_CATS[DM_CATS.length-1];
+const dmStatusById=id=>DM_STATUS.find(s=>s.id===id)||DM_STATUS[0];
+const mapDemandaRow=r=>{const d=(r.dados&&typeof r.dados==='object')?r.dados:parseExtras(r.dados);return {id:r.id,clientId:r.client_id,cat:r.categoria,title:r.titulo,status:r.status||'afazer',parentId:r.parent_id||null,desc:d.desc||'',link:d.link||'',resp:d.resp||'',prazo:d.prazo||'',prioridade:d.prioridade||'media',tipo:d.tipo||'',trecho:d.trecho||'',calItemId:d.calItemId||'',createdAt:r.created_at||''};};
+function demandaRowPayload(d){return {client_id:d.clientId,categoria:d.cat,titulo:d.title,status:d.status,parent_id:d.parentId||null,dados:{desc:d.desc||'',link:d.link||'',resp:d.resp||'',prazo:d.prazo||'',prioridade:d.prioridade||'media',tipo:d.tipo||'',trecho:d.trecho||'',calItemId:d.calItemId||''},updated_at:new Date().toISOString()};}
+function saveDemandasCache(){localStorage.setItem(DEMANDAS_KEY,JSON.stringify(demandas));}
+async function loadDemandas(){
+  try{demandas=(await supaFetch('demandas_consultoria?order=created_at.asc')).map(mapDemandaRow);saveDemandasCache();}
+  catch(e){demandas=JSON.parse(localStorage.getItem(DEMANDAS_KEY)||'[]');}
+}
+async function syncUpsertDemanda(d,isNew){
+  try{
+    if(isNew)await supaFetch('demandas_consultoria','POST',Object.assign({id:d.id},demandaRowPayload(d)));
+    else await supaFetch('demandas_consultoria?id=eq.'+d.id,'PATCH',demandaRowPayload(d));
+  }catch(e){toast('Não sincronizou — salvo só neste aparelho');}
+}
+async function syncDeleteDemanda(id){try{await supaFetch('demandas_consultoria?id=eq.'+id,'DELETE');}catch(e){}}
+function visibleDemandas(){return session.role==='cliente'?demandas.filter(d=>d.clientId===session.clientId):demandas;}
+function dmCanEdit(){return session&&session.role!=='cliente';}
+
+function populateDemandaClientSelect(){
+  const sel=document.getElementById('dm-client');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  if(cur&&clients.some(c=>c.id===cur))sel.value=cur;
+  else{const andre=clients.find(c=>/andr[eé]/i.test(c.name));if(andre)sel.value=andre.id;}
+  sel.style.display=session.role==='cliente'?'none':'';
+}
+function dmClientId(){return session.role==='cliente'?session.clientId:document.getElementById('dm-client').value;}
+function dmIsLate(d){return d.prazo&&d.status!=='pronto'&&d.prazo<todayISO();}
+
+function renderDemandas(){
+  if(!document.getElementById('dm-board'))return;
+  populateDemandaClientSelect();
+  document.querySelectorAll('#view-demandas .dm-edit-only').forEach(el=>el.style.display=dmCanEdit()?'':'none');
+  const cid=dmClientId();
+  const q=(document.getElementById('dm-search').value||'').trim().toLowerCase();
+  const prio=document.getElementById('dm-prio').value;
+  const all=visibleDemandas().filter(d=>d.clientId===cid);
+  // KPIs
+  const kpi=(id,label,color,list)=>{
+    const done=list.filter(d=>d.status==='pronto').length,tot=list.length,pct=tot?Math.round(done/tot*100):0;
+    const late=list.filter(dmIsLate).length;
+    return `<div class="dm-kpi${dmCat===id?' on':''}" onclick="dmCat='${id}';renderDemandas()">
+      <div class="k-top"><span class="k-dot" style="background:${color}"></span>${label}</div>
+      <div class="k-num">${done}<small> / ${tot} prontos</small></div>
+      <div class="k-bar"><span style="width:${pct}%;background:${color}"></span></div>
+      <div class="k-sub">${tot-done} por fazer${late?` · <span style="color:#b91c1c">${late} atrasado${late>1?'s':''}</span>`:''}</div>
+    </div>`;
+  };
+  document.getElementById('dm-kpis').innerHTML=kpi('all','Tudo','#7c4a1e',all)+DM_CATS.map(c=>kpi(c.id,c.label,c.color,all.filter(d=>d.cat===c.id))).join('');
+  // Board
+  let list=all;
+  if(dmCat!=='all')list=list.filter(d=>d.cat===dmCat);
+  if(prio!=='all')list=list.filter(d=>(d.prioridade||'media')===prio);
+  if(q)list=list.filter(d=>(d.title+' '+d.desc+' '+d.resp+' '+d.tipo).toLowerCase().includes(q));
+  const prOrder={alta:0,media:1,baixa:2};
+  list.sort((a,b)=>(prOrder[a.prioridade]??1)-(prOrder[b.prioridade]??1)||(a.prazo||'9999').localeCompare(b.prazo||'9999'));
+  const can=dmCanEdit();
+  document.getElementById('dm-board').innerHTML=DM_STATUS.map(s=>{
+    const col=list.filter(d=>d.status===s.id);
+    return `<div class="kb-col" ${can?`ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dmDrop(event,'${s.id}')"`:''}>
+      <div class="kb-hd"><span class="kdot" style="background:${s.color}"></span><span class="kname">${s.label}</span><span class="kcount">${col.length}</span></div>
+      <div class="kb-body">${col.length?col.map(d=>dmCardHTML(d,can)).join(''):'<div class="kb-empty">Nada aqui</div>'}</div>
+    </div>`;
+  }).join('');
+}
+function dmCardHTML(d,can){
+  const c=dmCatById(d.cat);
+  const kids=d.cat==='aula'?demandas.filter(x=>x.parentId===d.id):[];
+  const parent=d.parentId?demandas.find(x=>x.id===d.parentId):null;
+  return `<div class="dm-card" style="border-left-color:${c.color}" ${can?`draggable="true" ondragstart="dmDragId='${d.id}';event.dataTransfer.effectAllowed='move'" ondragend="dragEnd(event)"`:''} onclick="openDemanda('${d.id}')">
+    <div class="d-top"><span class="dm-tag" style="background:${c.color}">${c.label}</span>${d.tipo?`<span class="dm-pill">${esc(d.tipo)}</span>`:''}${d.prioridade==='alta'?'<span class="dm-pill alta">Alta</span>':''}${d.prazo?`<span class="dm-pill${dmIsLate(d)?' late':''}">${fmtDate(d.prazo)}</span>`:''}</div>
+    <div class="d-title">${esc(d.title)}</div>
+    <div class="d-sub">${parent?`<span>↳ ${esc(parent.title)}</span>`:''}${kids.length?`<span>${kids.filter(k=>k.status==='pronto').length}/${kids.length} extraídos prontos</span>`:''}${d.resp?`<span>${esc(d.resp)}</span>`:''}${d.link?`<a href="${esc(d.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">abrir link ↗</a>`:''}${d.calItemId?'<span>no calendário ✓</span>':''}</div>
+  </div>`;
+}
+function dmDrop(e,status){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  const d=demandas.find(x=>x.id===dmDragId);dmDragId=null;
+  if(!d||d.status===status)return;
+  d.status=status;saveDemandasCache();syncUpsertDemanda(d,false);renderDemandas();
+  toast('Movido para '+dmStatusById(status).label);
+}
+
+// ── Modal ──
+function renderDmStatusChips(){
+  document.getElementById('dm-status-chips').innerHTML=DM_STATUS.map(s=>`<span class="stage-chip${dmStatus===s.id?' on':''}" style="${dmStatus===s.id?'background:'+s.color:''}" onclick="if(dmCanEdit()){dmStatus='${s.id}';renderDmStatusChips()}"><span class="sc-dot" style="background:${dmStatus===s.id?'#fff':s.color}"></span>${s.label}</span>`).join('');
+}
+function dmFillParentSelect(clientId,current){
+  const aulas=demandas.filter(d=>d.cat==='aula'&&d.clientId===clientId);
+  document.getElementById('dm-parent').innerHTML='<option value="">— Sem aula vinculada —</option>'+aulas.map(a=>`<option value="${a.id}">${esc(a.title)}</option>`).join('');
+  document.getElementById('dm-parent').value=current||'';
+}
+function dmSyncFields(){
+  const cat=document.getElementById('dm-cat').value;
+  document.getElementById('dm-extra-wrap').style.display=cat==='extraido'?'':'none';
+  document.getElementById('dm-trecho-wrap').style.display=cat==='extraido'?'':'none';
+  const existing=dmEditingId&&demandas.find(d=>d.id===dmEditingId);
+  document.getElementById('dm-children-wrap').style.display=(cat==='aula'&&existing)?'':'none';
+  document.getElementById('dm-cal-wrap').style.display=(existing&&['extraido','roteiro','criativo'].includes(cat)&&dmCanEdit())?'':'none';
+  document.getElementById('dm-dot').style.background=dmCatById(cat).color;
+}
+function openDemanda(id,preset){
+  const d=id?demandas.find(x=>x.id===id):null;
+  dmEditingId=d?d.id:null;
+  const p=preset||{};
+  const cid=d?d.clientId:(p.clientId||dmClientId());
+  document.getElementById('dm-cat').innerHTML=DM_CATS.map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+  document.getElementById('dm-mclient').innerHTML=clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  document.getElementById('dm-tipo').innerHTML=DM_TIPOS.map(t=>`<option>${t}</option>`).join('');
+  document.getElementById('dm-cat').value=d?d.cat:(p.cat||(dmCat!=='all'?dmCat:'outro'));
+  document.getElementById('dm-mclient').value=cid;
+  dmFillParentSelect(cid,d?d.parentId:p.parentId);
+  document.getElementById('dm-tipo').value=d&&d.tipo?d.tipo:(p.tipo||DM_TIPOS[0]);
+  document.getElementById('dm-title').value=d?d.title:(p.title||'');
+  document.getElementById('dm-trecho').value=d?d.trecho:'';
+  document.getElementById('dm-resp').value=d?d.resp:'';
+  document.getElementById('dm-prazo').value=d?d.prazo:'';
+  document.getElementById('dm-prioridade').value=d?(d.prioridade||'media'):'media';
+  document.getElementById('dm-link').value=d?d.link:'';
+  document.getElementById('dm-desc').value=d?d.desc:'';
+  dmStatus=d?d.status:'afazer';renderDmStatusChips();
+  document.getElementById('dm-ttl').textContent=d?'Editar demanda':'Nova demanda';
+  document.getElementById('dm-del-btn').style.visibility=d?'visible':'hidden';
+  // filhos da aula
+  if(d&&d.cat==='aula'){
+    const kids=demandas.filter(x=>x.parentId===d.id);
+    document.getElementById('dm-children').innerHTML=kids.length?kids.map(k=>`<div class="dm-child" onclick="openDemanda('${k.id}')"><span class="dm-pill">${esc(k.tipo||'Conteúdo')}</span><span class="c-title">${esc(k.title)}</span><span class="stage-tag" style="background:${dmStatusById(k.status).color}"><span class="sdot"></span>${dmStatusById(k.status).label}</span></div>`).join(''):'<div class="dm-hint">Nada extraído ainda. Use “Extrair conteúdo” pra registrar cortes, carrosséis, memes ou roteiros que saem dessa aula.</div>';
+  }
+  const cal=d&&d.calItemId?items.find(i=>i.id===d.calItemId):null;
+  document.getElementById('dm-cal-btn').style.display=cal?'none':'';
+  document.getElementById('dm-cal-hint').textContent=cal?('Já está no calendário: '+(cal.date?fmtDate(cal.date):'banco de ideias')+' · '+stageById(cal.stage).label):'Cria uma ideia no calendário deste cliente com o título e a descrição desta demanda.';
+  const can=dmCanEdit();
+  document.querySelectorAll('#dm-overlay .dm-f').forEach(el=>el.disabled=!can);
+  document.getElementById('dm-foot').style.display=can?'':'none';
+  document.querySelectorAll('#dm-overlay .dm-edit-only').forEach(el=>el.style.display=can?'':'none');
+  dmSyncFields();
+  document.getElementById('dm-overlay').classList.add('open');
+  setTimeout(()=>{if(!d&&can)document.getElementById('dm-title').focus();},50);
+}
+function closeDemanda(){document.getElementById('dm-overlay').classList.remove('open');dmEditingId=null;}
+function dmCollect(){
+  const cat=document.getElementById('dm-cat').value;
+  return {
+    clientId:document.getElementById('dm-mclient').value,cat,
+    title:document.getElementById('dm-title').value.trim(),status:dmStatus,
+    parentId:cat==='extraido'?(document.getElementById('dm-parent').value||null):null,
+    tipo:cat==='extraido'?document.getElementById('dm-tipo').value:'',
+    trecho:cat==='extraido'?document.getElementById('dm-trecho').value.trim():'',
+    resp:document.getElementById('dm-resp').value.trim(),prazo:document.getElementById('dm-prazo').value,
+    prioridade:document.getElementById('dm-prioridade').value,link:document.getElementById('dm-link').value.trim(),
+    desc:document.getElementById('dm-desc').value.trim()
+  };
+}
+function saveDemanda(keepOpen){
+  if(!dmCanEdit())return null;
+  const v=dmCollect();
+  if(!v.title){toast('Escreve o título!');return null;}
+  if(!v.clientId){toast('Seleciona um cliente!');return null;}
+  let d=dmEditingId?demandas.find(x=>x.id===dmEditingId):null;
+  const isNew=!d;
+  if(isNew){d={id:'dm'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),calItemId:''};demandas.push(d);}
+  Object.assign(d,v);
+  saveDemandasCache();syncUpsertDemanda(d,isNew);
+  if(!keepOpen){closeDemanda();toast(isNew?'Demanda criada':'Demanda salva');}
+  renderDemandas();
+  return d;
+}
+function deleteDemanda(){
+  const d=demandas.find(x=>x.id===dmEditingId);if(!d)return;
+  const kids=demandas.filter(x=>x.parentId===d.id);
+  if(!confirm('Excluir "'+d.title+'"?'+(kids.length?`\n\nOs ${kids.length} conteúdos extraídos dela continuam, só perdem o vínculo.`:'')))return;
+  kids.forEach(k=>{k.parentId=null;syncUpsertDemanda(k,false);});
+  demandas=demandas.filter(x=>x.id!==d.id);saveDemandasCache();syncDeleteDemanda(d.id);
+  closeDemanda();renderDemandas();toast('Demanda excluída');
+}
+function dmExtractFromCurrent(){
+  const aula=saveDemanda(true);if(!aula)return;
+  openDemanda(null,{cat:'extraido',clientId:aula.clientId,parentId:aula.id,title:''});
+}
+function dmSendToCalendar(){
+  const d=saveDemanda(true);if(!d)return;
+  if(d.calItemId&&items.some(i=>i.id===d.calItemId)){toast('Já está no calendário');return;}
+  const parent=d.parentId?demandas.find(x=>x.id===d.parentId):null;
+  const descParts=[d.desc,parent?('Origem: "'+parent.title+'"'+(d.trecho?' — trecho '+d.trecho:'')):'',d.link?('Link: '+d.link):''].filter(Boolean);
+  const chans=clientChannels(d.clientId);
+  const item={id:Date.now().toString(),type:'ideia',date:null,clientId:d.clientId,canal:chans[0],
+    format:DM_TIPO_FORMAT[d.tipo]||(d.cat==='criativo'?'Reels nativo':'Reels nativo'),place:'Feed',
+    title:d.title,stage:'producao',tema:d.tipo||dmCatById(d.cat).label,desc:descParts.join('\n\n'),
+    links:[d.link,parent&&parent.link].filter(Boolean),material:'',stories:[],posted:false};
+  items.push(item);saveItems();syncAddItem(item);
+  d.calItemId=item.id;saveDemandasCache();syncUpsertDemanda(d,false);
+  render();openDemanda(d.id);toast('Mandado pro banco de ideias');
+}
+function exportDemandasPDF(){
+  const cid=dmClientId();const cl=getClient(cid)||{name:''};
+  const list=visibleDemandas().filter(d=>d.clientId===cid&&(dmCat==='all'||d.cat===dmCat));
+  const cats=DM_CATS.filter(c=>list.some(d=>d.cat===c.id));
+  const body=`<h1>Central de demandas — ${esc(cl.name)}</h1><p class="sub">Gerado em ${fmtDate(todayISO())}</p>`+cats.map(c=>{
+    const rows=list.filter(d=>d.cat===c.id).sort((a,b)=>DM_STATUS.findIndex(s=>s.id===a.status)-DM_STATUS.findIndex(s=>s.id===b.status));
+    return `<h2 style="color:${c.color}">${c.label} — ${rows.filter(r=>r.status==='pronto').length}/${rows.length} prontos</h2><table><thead><tr><th>Demanda</th><th>Status</th><th>Responsável</th><th>Prazo</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.title)}${r.tipo?' <em>('+esc(r.tipo)+')</em>':''}</td><td>${dmStatusById(r.status).label}</td><td>${esc(r.resp||'—')}</td><td>${r.prazo?fmtDate(r.prazo):'—'}</td></tr>`).join('')}</tbody></table>`;
+  }).join('');
+  printDoc('Central de demandas — '+cl.name,body,false);
+}
 </script>
 </body>
 </html>
