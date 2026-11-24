@@ -276,6 +276,42 @@ textarea.modal-input{resize:vertical;min-height:60px;}
 
 .report-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:1.1rem;}
 .report-filters select{border:1.5px solid var(--border);border-radius:9px;padding:8px 11px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:600;color:var(--text);background:var(--card);outline:none;cursor:pointer;}
+
+/* ── Tráfego @vitoriabrendab ── */
+.tf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:1rem;}
+.tf-eyebrow{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.tf-title{font-size:20px;font-weight:800;color:var(--text);margin-top:2px;}
+.tf-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.tf-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);background:var(--card);color:var(--brown);border-radius:10px;padding:8px 12px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.tf-btn-pri{background:var(--grad);color:#fff;border-color:transparent;}
+.tf-goal{margin-bottom:1rem;}
+.tf-goal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.tf-k{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.tf-big{font-size:26px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2;}
+.tf-bar{height:12px;border-radius:99px;background:var(--cream);border:1px solid var(--border);margin-top:1rem;overflow:hidden;}
+.tf-bar-fill{height:100%;background:var(--grad);border-radius:99px;width:0;transition:width .4s;}
+.tf-bar-lbls{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums;}
+.tf-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:1rem;}
+.tf-kpi{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:.9rem 1rem;}
+.tf-kpi .tf-v{font-size:20px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;margin-top:3px;}
+.tf-kpi .tf-s{font-size:10.5px;color:var(--muted);margin-top:2px;}
+.tf-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.tf-ab-row{margin-bottom:1rem;}
+.tf-ab-name{font-size:12px;font-weight:700;color:var(--text);display:flex;justify-content:space-between;gap:8px;}
+.tf-ab-track{height:10px;background:var(--cream);border-radius:99px;margin-top:5px;overflow:hidden;}
+.tf-ab-fill{height:100%;border-radius:99px;}
+.tf-ab-meta{font-size:10.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;}
+.tf-win{font-size:10px;font-weight:700;color:#fff;background:#15803d;border-radius:99px;padding:1px 8px;}
+.tf-empty{font-size:12px;color:var(--muted2);text-align:center;padding:1.2rem;line-height:1.6;}
+.tf-pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--cream);color:var(--ink-soft);border:1px solid var(--border);white-space:nowrap;}
+.tf-pill.on{background:#dcfce7;color:#166534;border-color:#bbf7d0;}
+.tf-pill.rev{background:#fef3c7;color:#92400e;border-color:#fde68a;}
+.tf-edit{background:none;border:1.5px solid var(--border);border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--brown);cursor:pointer;font-family:'Poppins',sans-serif;}
+.tf-foot{font-size:11px;color:var(--muted);margin-top:.8rem;line-height:1.6;}
+.tf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#tf-tbody td{font-variant-numeric:tabular-nums;}
+#tf-tbody a{color:var(--brown);font-weight:700;text-decoration:none;}
+@media(max-width:860px){.tf-2col,.tf-goal-row{grid-template-columns:1fr;}.tf-big{font-size:22px;}}
 .report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:1.5rem;}
 .report-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem;}
 .report-card .rc-head{display:flex;align-items:center;gap:8px;margin-bottom:.9rem;}
@@ -451,6 +487,10 @@ textarea.modal-input{resize:vertical;min-height:60px;}
       <div class="sb-item" data-view="relatorio" onclick="switchView('relatorio')">
         <svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>
         Relatório
+      </div>
+      <div class="sb-item" data-view="vitoriabrendab" data-roles="admin,editor" onclick="switchView('vitoriabrendab')">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        @vitoriabrendab
       </div>
       <div class="sb-spacer"></div>
       <div class="sb-section" id="sb-admin-section" data-roles="admin" style="display:none">Administração</div>
@@ -789,6 +829,47 @@ textarea.modal-input{resize:vertical;min-height:60px;}
     </div>
 
     <!-- VIEW USUÁRIOS -->
+    <div id="view-vitoriabrendab" class="view">
+      <div class="tf-head">
+        <div>
+          <div class="tf-eyebrow">Tráfego pago · Instagram</div>
+          <div class="tf-title">Rumo aos <span id="tf-goal-lbl">8.000</span> seguidores</div>
+        </div>
+        <div class="tf-actions">
+          <button class="tf-btn" onclick="openTfFollowers()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Registrar seguidores</button>
+          <button class="tf-btn tf-btn-pri" onclick="openTfAd()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Novo anúncio</button>
+        </div>
+      </div>
+      <div class="tf-goal panel">
+        <div class="tf-goal-row">
+          <div><div class="tf-k">Seguidores agora</div><div class="tf-big" id="tf-now">—</div></div>
+          <div><div class="tf-k">Faltam</div><div class="tf-big" id="tf-left">—</div></div>
+          <div><div class="tf-k">Ganhos desde o início</div><div class="tf-big" id="tf-gain">—</div></div>
+        </div>
+        <div class="tf-bar"><div class="tf-bar-fill" id="tf-bar-fill"></div></div>
+        <div class="tf-bar-lbls"><span id="tf-start-lbl">—</span><span id="tf-pct">—</span></div>
+      </div>
+      <div class="tf-kpis" id="tf-kpis"></div>
+      <div class="tf-2col">
+        <div class="panel">
+          <div class="panel-title"><svg class="ic-s" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>Teste A/B — custo por resultado</div>
+          <div id="tf-ab"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title"><svg class="ic-s" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Evolução de seguidores</div>
+          <div id="tf-chart"></div>
+        </div>
+      </div>
+      <div class="panel-title" style="margin:1.2rem 0 .7rem 2px"><svg class="ic-s" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Anúncios</div>
+      <div style="overflow-x:auto;">
+        <table class="report-table">
+          <thead><tr><th>Anúncio</th><th>Status</th><th>Orçamento</th><th>Gasto</th><th>Impressões</th><th>Visitas</th><th>Seguidores</th><th>R$/visita</th><th>R$/seguidor</th><th></th></tr></thead>
+          <tbody id="tf-tbody"></tbody>
+        </table>
+      </div>
+      <div class="tf-foot" id="tf-foot"></div>
+    </div>
+
     <div id="view-usuarios" class="view">
     <div class="shell">
       <div class="side">
@@ -818,6 +899,17 @@ textarea.modal-input{resize:vertical;min-height:60px;}
       </div>
     </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal tráfego -->
+<div class="modal-overlay" id="tf-overlay" onclick="if(event.target===this)closeTf()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-ttl" id="tf-m-ttl">Anúncio</div>
+      <button class="modal-close" onclick="closeTf()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-body" id="tf-m-body" style="padding:1.2rem 1.5rem;"></div>
   </div>
 </div>
 
@@ -1172,6 +1264,8 @@ function initRealtime(){
       .on('postgres_changes',{event:'*',schema:'public',table:'clientes'},p=>{applyRowChange(clients,p,mapClientRow);saveClients();updateClientSelects();updateFilters();renderCal();if(currentView==='clientes')renderClientList();})
       .on('postgres_changes',{event:'*',schema:'public',table:'eventos_consultoria'},p=>{applyRowChange(events,p,mapEventRow);saveEvents();renderEvList();renderEvCal();renderCal();})
       .on('postgres_changes',{event:'*',schema:'public',table:'demandas_consultoria'},p=>{applyRowChange(demandas,p,mapDemandaRow);saveDemandasCache();if(currentView==='demandas')renderDemandas();})
+      .on('postgres_changes',{event:'*',schema:'public',table:'trafego_anuncios'},()=>{if(currentView==='vitoriabrendab')loadTrafego();})
+      .on('postgres_changes',{event:'*',schema:'public',table:'trafego_seguidores'},()=>{if(currentView==='vitoriabrendab')loadTrafego();})
       .on('postgres_changes',{event:'*',schema:'public',table:'usuarios_consultoria'},p=>{applyRowChange(users,p,mapUserRow);saveUsersCache();if(currentView==='usuarios')renderUsers();})
       .subscribe(status=>{
         if(status==='SUBSCRIBED')setSyncStatus('live');
@@ -1347,6 +1441,7 @@ const VIEW_META={
   clientes:{title:'Clientes',sub:'Cadastre e organize seus clientes de consultoria'},
   acontecimentos:{title:'Acontecimentos',sub:'Lançamentos, campanhas e datas importantes'},
   relatorio:{title:'Relatório',sub:'Produção de conteúdo por cliente'},
+  vitoriabrendab:{title:'@vitoriabrendab',sub:'Tráfego pago — seguidores, visitas ao perfil e teste de criativos'},
   usuarios:{title:'Usuários',sub:'Acessos e permissões da equipe e dos clientes'}
 };
 function switchView(view){
@@ -1362,6 +1457,7 @@ function switchView(view){
   if(view==='relatorio')renderReport();
   if(view==='producao')renderKanban();
   if(view==='demandas')renderDemandas();
+  if(view==='vitoriabrendab')loadTrafego();
   toggleSidebar(false);
 }
 function toggleSidebar(force){
@@ -2506,6 +2602,156 @@ function exportDemandasPDF(){
     return `<h2 style="color:${c.color}">${c.label} — ${rows.filter(r=>r.status==='pronto').length}/${rows.length} prontos</h2><table><thead><tr><th>Demanda</th><th>Status</th><th>Responsável</th><th>Prazo</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.title)}${r.tipo?' <em>('+esc(r.tipo)+')</em>':''}</td><td>${dmStatusById(r.status).label}</td><td>${esc(r.resp||'—')}</td><td>${r.prazo?fmtDate(r.prazo):'—'}</td></tr>`).join('')}</tbody></table>`;
   }).join('');
   printDoc('Central de demandas — '+cl.name,body,false);
+}
+
+// ══════════ TRÁFEGO @vitoriabrendab ══════════
+let tfAds=[],tfFollowers=[],tfLoaded=false,tfEditing=null;
+const tfFmtBRL=v=>(v==null||isNaN(v))?'—':'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const tfFmtN=v=>(v==null||isNaN(v))?'—':Number(v).toLocaleString('pt-BR');
+const tfEsc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function loadTrafego(){
+  try{
+    tfAds=await supaFetch('trafego_anuncios?perfil=eq.vitoriabrendab&order=created_at.asc');
+    tfFollowers=await supaFetch('trafego_seguidores?perfil=eq.vitoriabrendab&order=data.asc');
+    tfLoaded=true;
+  }catch(e){
+    document.getElementById('tf-kpis').innerHTML='<div class="tf-empty">Não consegui carregar os dados de tráfego.<br>'+tfEsc((e.message||'').slice(0,160))+'</div>';
+    return;
+  }
+  renderTrafego();
+}
+function renderTrafego(){
+  const goal=(tfFollowers.length?tfFollowers[tfFollowers.length-1].meta:8000)||8000;
+  const first=tfFollowers[0],last=tfFollowers[tfFollowers.length-1];
+  const now=last?last.seguidores:null,start=first?first.seguidores:null;
+  document.getElementById('tf-goal-lbl').textContent=tfFmtN(goal);
+  document.getElementById('tf-now').textContent=tfFmtN(now);
+  document.getElementById('tf-left').textContent=now!=null?tfFmtN(Math.max(goal-now,0)):'—';
+  const gain=(now!=null&&start!=null)?now-start:null;
+  document.getElementById('tf-gain').textContent=gain==null?'—':(gain>=0?'+':'')+tfFmtN(gain);
+  const span=goal-(start||0),pct=(now!=null&&span>0)?Math.min(100,Math.max(0,((now-start)/span)*100)):0;
+  document.getElementById('tf-bar-fill').style.width=pct+'%';
+  document.getElementById('tf-start-lbl').textContent=first?('Início: '+tfFmtN(start)+' em '+new Date(first.data+'T12:00').toLocaleDateString('pt-BR')):'Registre os seguidores';
+  document.getElementById('tf-pct').textContent=pct.toFixed(0)+'% do caminho';
+
+  const sum=k=>tfAds.reduce((a,x)=>a+(Number(x[k])||0),0);
+  const gasto=sum('gasto'),vis=sum('visitas_perfil'),seg=sum('seguidores'),imp=sum('impressoes');
+  const previsto=tfAds.reduce((a,x)=>a+(Number(x.orcamento_dia)||0)*(Number(x.dias)||0),0);
+  const kpis=[
+    ['Investido',tfFmtBRL(gasto),'de '+tfFmtBRL(previsto)+' previstos (sem impostos)'],
+    ['Impressões',tfFmtN(imp),'vezes que os anúncios apareceram'],
+    ['Visitas ao perfil',tfFmtN(vis),'vindas dos anúncios'],
+    ['Seguidores (anúncios)',tfFmtN(seg),'atribuídos pela Meta'],
+    ['Custo por visita',vis?tfFmtBRL(gasto/vis):'—','quanto menor, melhor'],
+    ['Custo por seguidor',seg?tfFmtBRL(gasto/seg):'—','quanto menor, melhor']
+  ];
+  document.getElementById('tf-kpis').innerHTML=kpis.map(k=>'<div class="tf-kpi"><div class="tf-k">'+k[0]+'</div><div class="tf-v">'+k[1]+'</div><div class="tf-s">'+k[2]+'</div></div>').join('');
+
+  // A/B
+  const ab=document.getElementById('tf-ab');
+  if(!tfAds.length){ab.innerHTML='<div class="tf-empty">Nenhum anúncio cadastrado.</div>';}
+  else{
+    const withData=tfAds.filter(a=>Number(a.gasto)>0);
+    if(!withData.length){
+      ab.innerHTML=tfAds.map(a=>'<div class="tf-ab-row"><div class="tf-ab-name"><span>'+tfEsc(a.nome)+'</span><span class="tf-pill rev">'+tfEsc(a.status)+'</span></div><div class="tf-ab-track"><div class="tf-ab-fill" style="width:0"></div></div><div class="tf-ab-meta">Aguardando primeiros resultados</div></div>').join('')+'<div class="tf-foot">O vencedor aparece aqui quando os anúncios começarem a gastar. Avalie a partir do 3º ou 4º dia.</div>';
+    }else{
+      const metric=a=>Number(a.seguidores)>0?Number(a.gasto)/Number(a.seguidores):(Number(a.visitas_perfil)>0?Number(a.gasto)/Number(a.visitas_perfil):null);
+      const useSeg=withData.some(a=>Number(a.seguidores)>0);
+      const vals=tfAds.map(metric),valid=vals.filter(v=>v!=null),best=valid.length?Math.min(...valid):null,max=valid.length?Math.max(...valid):1;
+      const colors=['#a8571f','#475569','#0f766e','#7c3aed'];
+      ab.innerHTML='<div class="tf-ab-meta" style="margin:0 0 .8rem">Comparando '+(useSeg?'custo por seguidor':'custo por visita ao perfil')+' · barra menor = mais barato</div>'+tfAds.map((a,i)=>{
+        const v=vals[i],w=v==null?0:Math.max(6,(v/max)*100);
+        return '<div class="tf-ab-row"><div class="tf-ab-name"><span>'+tfEsc(a.nome)+'</span>'+(v!=null&&v===best&&valid.length>1?'<span class="tf-win">Vencendo</span>':'')+'</div><div class="tf-ab-track"><div class="tf-ab-fill" style="width:'+w+'%;background:'+colors[i%colors.length]+'"></div></div><div class="tf-ab-meta">'+(v==null?'Sem resultados ainda':tfFmtBRL(v)+(useSeg?' por seguidor':' por visita'))+' · '+tfFmtN(a.visitas_perfil)+' visitas · '+tfFmtN(a.seguidores)+' seguidores · gasto '+tfFmtBRL(a.gasto)+'</div></div>';
+      }).join('');
+    }
+  }
+
+  // Chart
+  const ch=document.getElementById('tf-chart');
+  if(tfFollowers.length<2){
+    ch.innerHTML='<div class="tf-empty">'+(tfFollowers.length?'Ponto de partida: <b>'+tfFmtN(start)+'</b> seguidores.<br>':'')+'Registre os seguidores a cada poucos dias pra ver a curva aqui.</div>';
+  }else{
+    const W=460,H=190,pl=46,pr=12,pt=12,pb=26;
+    const ys=tfFollowers.map(f=>f.seguidores).concat([goal]);
+    const lo=Math.min(...ys)-20,hi=Math.max(...ys)+20;
+    const t0=new Date(first.data).getTime(),t1=new Date(last.data).getTime()||t0+1;
+    const X=d=>pl+((new Date(d).getTime()-t0)/Math.max(t1-t0,1))*(W-pl-pr);
+    const Y=v=>pt+(1-(v-lo)/(hi-lo))*(H-pt-pb);
+    const pts=tfFollowers.map(f=>X(f.data).toFixed(1)+','+Y(f.seguidores).toFixed(1)).join(' ');
+    const gy=Y(goal).toFixed(1);
+    ch.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">'
+      +'<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+gy+'" y2="'+gy+'" stroke="#15803d" stroke-dasharray="4 4" stroke-width="1.5"/>'
+      +'<text x="'+(W-pr)+'" y="'+(gy-5)+'" text-anchor="end" font-size="10" fill="#15803d" font-weight="700">Meta '+tfFmtN(goal)+'</text>'
+      +'<polyline points="'+pts+'" fill="none" stroke="var(--caramel)" stroke-width="2.5" stroke-linejoin="round"/>'
+      +tfFollowers.map(f=>'<circle cx="'+X(f.data).toFixed(1)+'" cy="'+Y(f.seguidores).toFixed(1)+'" r="3.5" fill="var(--caramel)"><title>'+new Date(f.data+'T12:00').toLocaleDateString('pt-BR')+': '+tfFmtN(f.seguidores)+'</title></circle>').join('')
+      +'<text x="'+(pl-6)+'" y="'+(Y(start)+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+tfFmtN(start)+'</text>'
+      +'<text x="'+pl+'" y="'+(H-6)+'" font-size="10" fill="var(--muted)">'+new Date(first.data+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</text>'
+      +'<text x="'+(W-pr)+'" y="'+(H-6)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+new Date(last.data+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</text>'
+      +'</svg>';
+  }
+
+  // Table
+  const tb=document.getElementById('tf-tbody');
+  tb.innerHTML=tfAds.length?tfAds.map(a=>{
+    const st=(a.status||'').toLowerCase(),cls=st.includes('ativ')||st.includes('veicul')?'on':st.includes('anál')||st.includes('anal')?'rev':'';
+    const g=Number(a.gasto)||0,v=Number(a.visitas_perfil)||0,sg=Number(a.seguidores)||0;
+    return '<tr><td>'+(a.post_url?'<a href="'+tfEsc(a.post_url)+'" target="_blank" rel="noopener">'+tfEsc(a.nome)+'</a>':tfEsc(a.nome))+'<div style="font-size:10.5px;color:var(--muted)">'+tfEsc(a.publico)+(a.inicio?' · desde '+new Date(a.inicio+'T12:00').toLocaleDateString('pt-BR'):'')+'</div></td>'
+      +'<td><span class="tf-pill '+cls+'">'+tfEsc(a.status)+'</span></td>'
+      +'<td>'+tfFmtBRL(a.orcamento_dia)+'/dia · '+tfEsc(a.dias)+'d</td>'
+      +'<td>'+tfFmtBRL(g)+'</td><td>'+tfFmtN(a.impressoes)+'</td><td>'+tfFmtN(v)+'</td><td>'+tfFmtN(sg)+'</td>'
+      +'<td>'+(v?tfFmtBRL(g/v):'—')+'</td><td>'+(sg?tfFmtBRL(g/sg):'—')+'</td>'
+      +'<td><button class="tf-edit" onclick="openTfAd(\''+tfEsc(a.id)+'\')">Atualizar</button></td></tr>';
+  }).join(''):'<tr><td colspan="10" style="text-align:center;color:var(--muted2)">Nenhum anúncio ainda.</td></tr>';
+  const upd=tfAds.map(a=>a.atualizado_em).filter(Boolean).sort().pop();
+  document.getElementById('tf-foot').innerHTML='Números tirados de Instagram → Painel profissional → Ferramentas para anúncios. Valores de gasto sem ISS/PIS/COFINS (≈13,8% a mais na cobrança).'+(upd?' Última atualização: '+new Date(upd).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'.':'');
+}
+function closeTf(){document.getElementById('tf-overlay').classList.remove('open');tfEditing=null;}
+function tfField(id,label,val,type){return '<div class="field"><label>'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+tfEsc(val==null?'':val)+'"'+(type==='number'?' step="any" min="0"':'')+'></div>';}
+function openTfAd(id){
+  const a=id?tfAds.find(x=>x.id===id):{nome:'',post_url:'',publico:'Mulheres 28–50, Brasil',orcamento_dia:10,dias:7,inicio:new Date().toISOString().slice(0,10),status:'Em análise',gasto:0,impressoes:0,alcance:0,visitas_perfil:0,seguidores:0,obs:''};
+  if(!a)return;tfEditing=id||null;
+  document.getElementById('tf-m-ttl').textContent=id?'Atualizar resultados':'Novo anúncio';
+  const statuses=['Em análise','Ativo','Pausado','Concluído','Reprovado'];
+  document.getElementById('tf-m-body').innerHTML=
+    tfField('tf-nome','Nome',a.nome)+tfField('tf-url','Link do post',a.post_url)
+    +'<div class="tf-grid2">'+tfField('tf-publico','Público',a.publico)
+    +'<div class="field"><label>Status</label><select id="tf-status">'+statuses.map(s=>'<option'+(s===a.status?' selected':'')+'>'+s+'</option>').join('')+'</select></div>'
+    +tfField('tf-orc','Orçamento por dia (R$)',a.orcamento_dia,'number')+tfField('tf-dias','Dias',a.dias,'number')
+    +tfField('tf-inicio','Início',a.inicio,'date')+tfField('tf-gasto','Valor gasto (R$)',a.gasto,'number')
+    +tfField('tf-imp','Impressões',a.impressoes,'number')+tfField('tf-alc','Alcance (contas)',a.alcance,'number')
+    +tfField('tf-vis','Visitas ao perfil',a.visitas_perfil,'number')+tfField('tf-seg','Seguidores',a.seguidores,'number')
+    +'</div><div class="field"><label>Observações</label><textarea id="tf-obs" rows="3">'+tfEsc(a.obs)+'</textarea></div>'
+    +'<button class="add-btn" onclick="saveTfAd()">Salvar</button>';
+  document.getElementById('tf-overlay').classList.add('open');
+}
+async function saveTfAd(){
+  const g=id=>document.getElementById(id).value,n=id=>Number(g(id))||0;
+  const row={perfil:'vitoriabrendab',nome:g('tf-nome').trim()||'Anúncio',post_url:g('tf-url').trim(),publico:g('tf-publico').trim(),status:g('tf-status'),orcamento_dia:n('tf-orc'),dias:Math.round(n('tf-dias')),inicio:g('tf-inicio')||null,gasto:n('tf-gasto'),impressoes:Math.round(n('tf-imp')),alcance:Math.round(n('tf-alc')),visitas_perfil:Math.round(n('tf-vis')),seguidores:Math.round(n('tf-seg')),obs:g('tf-obs'),atualizado_em:new Date().toISOString()};
+  showLoad(true);
+  try{
+    if(tfEditing)await supaFetch('trafego_anuncios?id=eq.'+encodeURIComponent(tfEditing),'PATCH',row);
+    else await supaFetch('trafego_anuncios','POST',Object.assign({id:'ads-'+Date.now()},row));
+    closeTf();await loadTrafego();
+  }catch(e){alert('Não consegui salvar: '+(e.message||'').slice(0,160));}
+  showLoad(false);
+}
+function openTfFollowers(){
+  const last=tfFollowers[tfFollowers.length-1];
+  document.getElementById('tf-m-ttl').textContent='Registrar seguidores';
+  document.getElementById('tf-m-body').innerHTML='<div class="tf-grid2">'+tfField('tf-fdata','Data',new Date().toISOString().slice(0,10),'date')+tfField('tf-fseg','Seguidores',last?last.seguidores:'','number')+'</div>'+tfField('tf-fmeta','Meta',last?last.meta:8000,'number')+'<button class="add-btn" onclick="saveTfFollowers()">Salvar</button>';
+  document.getElementById('tf-overlay').classList.add('open');
+}
+async function saveTfFollowers(){
+  const d=document.getElementById('tf-fdata').value,s=Math.round(Number(document.getElementById('tf-fseg').value)),m=Math.round(Number(document.getElementById('tf-fmeta').value))||8000;
+  if(!d||!s){alert('Preencha data e seguidores.');return;}
+  showLoad(true);
+  try{
+    const id='seg-'+d,exists=tfFollowers.some(f=>f.id===id);
+    if(exists)await supaFetch('trafego_seguidores?id=eq.'+id,'PATCH',{seguidores:s,meta:m});
+    else await supaFetch('trafego_seguidores','POST',{id,perfil:'vitoriabrendab',data:d,seguidores:s,meta:m});
+    closeTf();await loadTrafego();
+  }catch(e){alert('Não consegui salvar: '+(e.message||'').slice(0,160));}
+  showLoad(false);
 }
 </script>
 </body>
