@@ -285,6 +285,9 @@ textarea.modal-input{resize:vertical;min-height:60px;}
 .tf-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);background:var(--card);color:var(--brown);border-radius:10px;padding:8px 12px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
 .tf-btn-pri{background:var(--grad);color:#fff;border-color:transparent;}
 .tf-goal{margin-bottom:1rem;}
+.tf-sync{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-soft);background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:8px 12px;margin-bottom:1rem;}
+.tf-sync-dot{width:8px;height:8px;border-radius:99px;background:var(--muted2);flex-shrink:0;}
+.tf-sync.ok .tf-sync-dot{background:#16a34a;}.tf-sync.warn .tf-sync-dot{background:#d97706;}.tf-sync.err .tf-sync-dot{background:#dc2626;}
 .tf-goal-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .tf-k{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
 .tf-big{font-size:26px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2;}
@@ -840,6 +843,7 @@ textarea.modal-input{resize:vertical;min-height:60px;}
           <button class="tf-btn tf-btn-pri" onclick="openTfAd()"><svg class="ic-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Novo anúncio</button>
         </div>
       </div>
+      <div class="tf-sync" id="tf-sync"><span class="tf-sync-dot"></span><span id="tf-sync-txt">Verificando conexão com a Meta…</span><button class="tf-edit" style="margin-left:auto" onclick="tfSyncNow()">Atualizar agora</button></div>
       <div class="tf-goal panel">
         <div class="tf-goal-row">
           <div><div class="tf-k">Seguidores agora</div><div class="tf-big" id="tf-now">—</div></div>
@@ -1265,6 +1269,7 @@ function initRealtime(){
       .on('postgres_changes',{event:'*',schema:'public',table:'eventos_consultoria'},p=>{applyRowChange(events,p,mapEventRow);saveEvents();renderEvList();renderEvCal();renderCal();})
       .on('postgres_changes',{event:'*',schema:'public',table:'demandas_consultoria'},p=>{applyRowChange(demandas,p,mapDemandaRow);saveDemandasCache();if(currentView==='demandas')renderDemandas();})
       .on('postgres_changes',{event:'*',schema:'public',table:'trafego_anuncios'},()=>{if(currentView==='vitoriabrendab')loadTrafego();})
+      .on('postgres_changes',{event:'*',schema:'public',table:'trafego_sync'},()=>{if(currentView==='vitoriabrendab')loadTrafego();})
       .on('postgres_changes',{event:'*',schema:'public',table:'trafego_seguidores'},()=>{if(currentView==='vitoriabrendab')loadTrafego();})
       .on('postgres_changes',{event:'*',schema:'public',table:'usuarios_consultoria'},p=>{applyRowChange(users,p,mapUserRow);saveUsersCache();if(currentView==='usuarios')renderUsers();})
       .subscribe(status=>{
@@ -2605,7 +2610,7 @@ function exportDemandasPDF(){
 }
 
 // ══════════ TRÁFEGO @vitoriabrendab ══════════
-let tfAds=[],tfFollowers=[],tfLoaded=false,tfEditing=null;
+let tfAds=[],tfFollowers=[],tfLoaded=false,tfEditing=null,tfSync=null;
 const tfFmtBRL=v=>(v==null||isNaN(v))?'—':'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const tfFmtN=v=>(v==null||isNaN(v))?'—':Number(v).toLocaleString('pt-BR');
 const tfEsc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -2613,6 +2618,7 @@ async function loadTrafego(){
   try{
     tfAds=await supaFetch('trafego_anuncios?perfil=eq.vitoriabrendab&order=created_at.asc');
     tfFollowers=await supaFetch('trafego_seguidores?perfil=eq.vitoriabrendab&order=data.asc');
+    try{tfSync=(await supaFetch('trafego_sync?id=eq.vitoriabrendab'))[0]||null;}catch(e){tfSync=null;}
     tfLoaded=true;
   }catch(e){
     document.getElementById('tf-kpis').innerHTML='<div class="tf-empty">Não consegui carregar os dados de tráfego.<br>'+tfEsc((e.message||'').slice(0,160))+'</div>';
@@ -2620,7 +2626,23 @@ async function loadTrafego(){
   }
   renderTrafego();
 }
+function renderTfSync(){
+  const el=document.getElementById('tf-sync'),tx=document.getElementById('tf-sync-txt');if(!el)return;
+  const st=tfSync&&tfSync.status;
+  el.className='tf-sync '+(st==='ok'?'ok':st==='parcial'||st==='aguardando_token'?'warn':st==='erro'?'err':'');
+  const when=tfSync&&tfSync.ultimo_sucesso?new Date(tfSync.ultimo_sucesso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):null;
+  tx.textContent=st==='ok'?'Ao vivo com a Meta · atualiza a cada 15 min'+(when?' · última: '+when:'')
+    :st==='aguardando_token'?'Conexão automática com a Meta pendente — falta configurar o token. Até lá, dá pra atualizar à mão.'
+    :st==='parcial'?'Atualizado em parte'+(when?' ('+when+')':'')+': '+(tfSync.mensagem||'')
+    :st==='erro'?'Falha ao puxar da Meta: '+(tfSync.mensagem||''):'Status da conexão indisponível';
+}
+async function tfSyncNow(){
+  const tx=document.getElementById('tf-sync-txt');tx.textContent='Puxando dados da Meta…';
+  try{await fetch(SUPA_URL+'/functions/v1/meta-sync',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});}catch(e){}
+  await loadTrafego();
+}
 function renderTrafego(){
+  renderTfSync();
   const goal=(tfFollowers.length?tfFollowers[tfFollowers.length-1].meta:8000)||8000;
   const first=tfFollowers[0],last=tfFollowers[tfFollowers.length-1];
   const now=last?last.seguidores:null,start=first?first.seguidores:null;
@@ -2703,7 +2725,7 @@ function renderTrafego(){
       +'<td><button class="tf-edit" onclick="openTfAd(\''+tfEsc(a.id)+'\')">Atualizar</button></td></tr>';
   }).join(''):'<tr><td colspan="10" style="text-align:center;color:var(--muted2)">Nenhum anúncio ainda.</td></tr>';
   const upd=tfAds.map(a=>a.atualizado_em).filter(Boolean).sort().pop();
-  document.getElementById('tf-foot').innerHTML='Números tirados de Instagram → Painel profissional → Ferramentas para anúncios. Valores de gasto sem ISS/PIS/COFINS (≈13,8% a mais na cobrança).'+(upd?' Última atualização: '+new Date(upd).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'.':'');
+  document.getElementById('tf-foot').innerHTML='Números da Meta (puxados automaticamente quando a conexão está ativa; senão, lançados à mão pelo botão Atualizar). Valores de gasto sem ISS/PIS/COFINS (≈13,8% a mais na cobrança).'+(upd?' Última atualização: '+new Date(upd).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'.':'');
 }
 function closeTf(){document.getElementById('tf-overlay').classList.remove('open');tfEditing=null;}
 function tfField(id,label,val,type){return '<div class="field"><label>'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+tfEsc(val==null?'':val)+'"'+(type==='number'?' step="any" min="0"':'')+'></div>';}
